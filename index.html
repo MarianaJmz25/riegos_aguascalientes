@@ -1,0 +1,179 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Cotizador - Sistemas de Riego Residencial</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <main class="app-shell">
+    <section class="workspace" aria-label="Captura de cotización">
+      <header class="topbar">
+        <div>
+          <p class="eyebrow">Sistemas de riego residencial</p>
+          <h1>Crear cotización</h1>
+        </div>
+        <div class="actions">
+          <button type="button" id="newQuoteBtn" class="button button-secondary">Nueva cotización</button>
+          <button type="button" id="downloadPdfBtn" class="button button-primary">Descargar PDF</button>
+          <button type="button" id="printBtn" class="button button-secondary">Imprimir PDF</button>
+        </div>
+      </header>
+
+      <form id="quoteForm" class="editor">
+        <fieldset class="panel identity">
+          <legend>Datos del cliente</legend>
+          <label>
+            Fecha
+            <input type="date" id="quoteDate" name="quoteDate">
+          </label>
+          <label>
+            Cliente / proyecto
+            <input type="text" id="clientName" name="clientName" placeholder="Nombre del cliente o proyecto">
+          </label>
+          <label class="full-field">
+            Domicilio
+            <input type="text" id="clientAddress" name="clientAddress" placeholder="Domicilio del cliente">
+          </label>
+          <label>
+            Número de cotización
+            <input type="number" id="quoteNumber" name="quoteNumber" min="1" step="1">
+          </label>
+          <label>
+            Tipo de trabajo
+            <input type="text" id="sectionName" name="sectionName" placeholder="Instalación / mantenimiento / pedido">
+          </label>
+        </fieldset>
+
+        <section class="panel items-panel" aria-label="Conceptos">
+          <div class="panel-header">
+            <div>
+              <h2>Pedido</h2>
+              <p>Agrega productos, servicios o partidas.</p>
+            </div>
+            <button type="button" id="addItemBtn" class="icon-button" title="Agregar concepto">+</button>
+          </div>
+          <div class="items-table" role="table" aria-label="Lista de conceptos">
+            <div class="items-row items-head" role="row">
+              <span>Cantidad</span>
+              <span>Concepto</span>
+              <span>Precio</span>
+              <span>Importe</span>
+              <span></span>
+            </div>
+            <div id="itemsBody"></div>
+          </div>
+        </section>
+
+        <fieldset class="panel totals-panel">
+          <legend>Totales</legend>
+          <label class="check-row">
+            <input type="checkbox" id="includeIva">
+            Agregar IVA
+          </label>
+          <label class="check-row">
+            <input type="checkbox" id="includeIsr">
+            Retener ISR
+          </label>
+          <label>
+            ISR %
+            <input type="number" id="isrRate" min="0" max="100" step="0.01" value="1.25">
+          </label>
+          <dl class="totals-list">
+            <div><dt>Subtotal</dt><dd id="subtotalText">$0</dd></div>
+            <div><dt>IVA</dt><dd id="ivaText">$0</dd></div>
+            <div><dt>ISR</dt><dd id="isrText">$0</dd></div>
+            <div class="grand-total"><dt>Total</dt><dd id="totalText">$0</dd></div>
+          </dl>
+        </fieldset>
+
+        <fieldset class="panel notes-panel">
+          <legend>Observaciones</legend>
+          <label>
+            Trabajo a realizar / notas para el cliente
+            <textarea id="workDescription" rows="5"></textarea>
+          </label>
+        </fieldset>
+      </form>
+    </section>
+
+    <section class="print-template" aria-hidden="true">
+      <article id="printArea" class="quote-page">
+        <div class="page-accent"></div>
+
+        <header class="quote-header">
+          <div class="brand-block">
+            <div class="brand-mark">R</div>
+            <div>
+              <h2>SISTEMAS DE RIEGO RESIDENCIAL</h2>
+              <p>Diseño, Instalación y Proyectos</p>
+              <span>Riegos · Instalaciones · Aguascalientes</span>
+            </div>
+          </div>
+          <div class="seller-card">
+            <strong>Carlos Misrrain Gutiérrez</strong>
+            <span>449 227 1248</span>
+            <span>carlos.misrrain7@gmail.com</span>
+            <span>riegos.instalaciones.ags@gmail.com</span>
+          </div>
+        </header>
+
+        <section class="document-title">
+          <div>
+            <p id="previewDate">Aguascalientes, México a 24 de junio de 2025</p>
+            <h1>Cotización</h1>
+          </div>
+          <div class="quote-number">
+            <span>No.</span>
+            <strong id="previewNumber">11565</strong>
+          </div>
+        </section>
+
+        <section class="client-box">
+          <div>
+            <span>Cliente / proyecto</span>
+            <strong id="previewClient">Cliente</strong>
+          </div>
+          <div>
+            <span>Domicilio</span>
+            <strong id="previewAddress">Domicilio</strong>
+          </div>
+        </section>
+
+        <section class="quote-body">
+          <h3 id="previewSection">Instalaciones</h3>
+          <table class="quote-table">
+            <thead>
+              <tr>
+                <th>Cantidad</th>
+                <th>Concepto</th>
+                <th>Precio</th>
+                <th>Importe</th>
+              </tr>
+            </thead>
+            <tbody id="previewItems"></tbody>
+          </table>
+
+          <table class="summary-table">
+            <tbody id="previewTotals"></tbody>
+          </table>
+        </section>
+
+        <section class="notes-box">
+          <h4>Observaciones</h4>
+          <p id="previewNotes"></p>
+        </section>
+
+        <footer class="quote-footer">
+          <span>Gracias por su confianza.</span>
+          <strong>SISTEMAS DE RIEGO RESIDENCIAL</strong>
+        </footer>
+      </article>
+    </section>
+  </main>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
